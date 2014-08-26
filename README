@@ -1,0 +1,11 @@
+SB_XML_ANALIZER
+
+INSTALL
+$dbh = new PDO('mysql:host=localhost;dbname=test', 'test', '123', array(PDO::ATTR_PERSISTENT => true));
+Измените/Change
+'test'  - Mysql login
+'123'   - Mysql Password
+host=localhost - localhost is Mysql Host
+dbname=test  -   dbname Name of Database
+Достачно настроить эти параметры, потом одни раз открыть index.php браузером и все таблицы создадутся
+

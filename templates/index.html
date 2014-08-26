@@ -1,0 +1,175 @@
+<!DOCTYPE !html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script>
+        var filename;
+        var xhr;
+        var cur_file_id = <?php echo  $cur_file_id; ?>;
+        function getFile(id) {
+            $('#xml').load('index.php?file_id=' + id, function () {
+                addEventsToTree()
+            });
+        }
+
+        function refreshFilelist()
+        {
+            $('#filelist').html('Загрузка...').load('index.php?filelist=1', function () { setActiveFile(); } );
+        }
+
+        function setActiveFile()
+        {
+            $('#filelist ul li a').each(function () {
+                if ($(this).data('id') == cur_file_id) {
+                    $('#filelist ul li').removeClass('cur');
+                    $(this).parent().addClass('cur');
+                    getFile($(this).data('id'))
+                    return false;
+                }
+            });
+        }
+
+        function addEventsToTree() {
+            $('#xml li.noclicked').unbind('click').click(function () {
+                event.preventDefault();
+                event.stopPropagation();
+                if ($(this).hasClass('clicked')) return false;
+                $(this).addClass('loading');
+                var id = $(this).data('id');
+                var file_id = $(this).data('file-id');
+                var that = this;
+                $.get('index.php?file_id=' + file_id + '&node_id=' + id, function (data) {
+                    $(that).removeClass('loading').removeClass('noclicked').addClass('clicked');
+                    $(that).find('div').html(data);
+                    addEventsToTree()
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            var dropZone = $('#dropZone');
+            var maxFileSize = 10000000; // максимальный размер файла ~ 10 мб.
+            var fd = new FormData();
+            if ( (typeof(window.FileReader) == 'undefined') || (!fd) ) {
+                dropZone.text('Не поддерживается браузером!');
+                dropZone.addClass('error');
+                setTimeout(8000,function() {$('#dropZone').hide();});
+            }
+
+
+            dropZone[0].ondragover = function () {
+                dropZone.addClass('hover');
+                return false;
+            };
+
+            dropZone[0].ondragleave = function () {
+                dropZone.removeClass('hover');
+                return false;
+            };
+
+            dropZone[0].ondrop = function (event) {
+                event.preventDefault();
+                dropZone.removeClass('hover');
+                dropZone.addClass('drop');
+
+                var file = event.dataTransfer.files[0];
+                if (file.size > maxFileSize) {
+                    dropZone.text('Файл слишком большой!');
+                    dropZone.removeClass("drop").addClass('error');
+                    return false;
+                }
+
+                if (!file.type.match(/.*xml/)) {
+                    dropZone.removeClass("drop").addClass('error');
+                    dropZone.text(file.name + ' - не подходит; ');
+                    return false;
+                }
+
+                xhr = new XMLHttpRequest();
+                xhr.upload.addEventListener('progress', uploadProgress, false);
+                xhr.onreadystatechange = stateChange;
+                fd.append("file", file,file.name);
+                xhr.open('POST', 'index.php');
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                xhr.setRequestHeader('X-FILE-NAME', file.name);
+                xhr.send(fd);
+            };
+            function uploadProgress(event) {
+                var percent = parseInt(event.loaded / event.total * 100);
+                dropZone.text('Загрузка: ' + percent + '%');
+            }
+
+            function stateChange(event) {
+
+                if (event.target.readyState == 4) {
+                    if (event.target.status == 200) {
+                        dropZone.text('Загружено');
+                        if (xhr.responseText.indexOf('Ошибки') == 0)
+                        {
+                            alert(xhr.responseText);
+                            return false;
+                        }
+                        cur_file_id = parseInt(xhr.responseText);
+                        refreshFilelist();
+                    } else {
+                        dropZone.text('Ошибка');
+                        dropZone.addClass('error');
+                    }
+                }
+            }
+
+            var fileinput = $('#fileinput');
+            $('#fileinput').change(function () {
+                filename = $(this).val().toLowerCase();
+                $('#uploadinput').attr('disabled', 'disabled');
+                if (filename.lastIndexOf('.xml') > 0) {
+                    $('#uploadinput').removeAttr('disabled');
+                }
+                if (filename.lastIndexOf('.kml') > 0) {
+                    $('#uploadinput').removeAttr('disabled');
+                }
+            });
+            $('#filelist ul li a').click(function () {
+                event.preventDefault();
+                $('#filelist ul li').removeClass('cur');
+                $(this).parent().addClass('cur');
+                getFile($(this).data('id'))
+            });
+            setActiveFile();
+        });
+
+    </script>
+</head>
+<body>
+<div id="header"></div>
+<?php if ($xml_errors) { ?>
+<div id="xmlerrors">
+    Ошибки XML:
+    <ul>
+        <?php foreach($xml_errors as $error) { ?>
+        <li><?php echo $error->message; ?></li>
+        <?php } ?>
+    </ul>
+</div>
+<?php } ?>
+<form action="index.php" method="post" enctype="multipart/form-data">
+    <div id="uploadZone">
+        <input type="file" id="fileinput" name="file"/>
+        <input type="submit" id="uploadinput" value="Загрузить" disabled="disabled"/>
+    </div>
+    <div id="dropZone">
+        Для загрузки, перетащите файл сюда.
+    </div>
+</form>
+<div id="workarea">
+    <div id="filelist">
+    <?php echo $filelist_str; ?>
+    </div>
+    <div id="xml"></div>
+</div>
+<div id="footer"></div>
+</body>
+</html>

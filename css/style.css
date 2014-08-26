@@ -1,0 +1,156 @@
+body {
+    font: 12px Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+#xmlerrors
+{
+    width: 400px;
+    padding: 10px 0;
+    margin: 50px auto;
+}
+
+#uploadZone
+{
+    font-size: 18px;
+    text-align: center;
+
+    width: 400px;
+    padding: 10px 0;
+    margin: 50px auto;
+
+}
+#dropZone {
+    color: #555;
+    font-size: 18px;
+    text-align: center;
+
+    width: 400px;
+    padding: 50px 0;
+    margin: 50px auto;
+
+    background: #eee;
+    border: 1px solid #ccc;
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+#dropZone.hover {
+    background: #ddd;
+    border-color: #aaa;
+}
+
+#dropZone.error
+{
+    background: #faa;
+    border-color: #f00;
+}
+
+#dropZone.drop
+{
+    background: #afa;
+    border-color: #0f0;
+}
+
+#workarea
+{
+    width: 600px;
+    padding: 50px 0;
+    margin: 50px auto;
+}
+#filelist
+{
+    width: 200px;
+    float: left;
+}
+#filelist ul
+{
+    padding: 0;
+    margin: 0;
+    width: 190px;
+}
+#filelist ul li
+{
+    list-style: none;
+    margin: 15px;
+    padding: 5px;
+    margin: 10px;
+    background-color: #555555;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    color: #FFF;
+    display: block;
+    text-align: center;
+}
+#filelist ul li a
+{
+    text-decoration: none;
+    color: #FFF;
+    display: block;
+}
+#filelist ul li:hover
+{
+    background-color: #ffaaaa;
+}
+
+#filelist ul li.cur
+{
+    background-color: #ff0000;
+}
+#filelist ul li.cur a
+{
+    color: #000;
+}
+#xml
+{
+    float: left;
+    width: 380px;
+    padding: 10px;
+}
+#xml ul
+{
+    list-style: none;
+
+}
+#xml ul li
+{
+    margin-bottom:10px;
+    cursor: pointer;
+    display: block;
+}
+#xml .loading
+{
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-image: url(../img/loader.gif);
+    padding-left: 30px;
+}
+#xml .clicked span
+{
+    color: black;
+}
+#xml .noclicked span
+{
+    border-bottom: 1px dashed;
+    color: blue;
+}
+
+
+#header
+{
+    width: 100%;
+    background-color: #dddddd;
+    height: 120px;
+    clear: both;
+}
+#footer
+{
+    width: 100%;
+    margin-top: 50px;
+    background-color: #dddddd;
+    height: 50px;
+    clear: both;
+}
